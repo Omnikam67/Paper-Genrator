@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Questions - Paper Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        nav h1 {
+            font-size: 24px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: 0.3s;
+            margin-left: 10px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        table th {
+            padding: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .badge-mcq {
+            background: #dbeafe;
+            color: #0c4a6e;
+        }
+
+        .badge-one-sentence {
+            background: #dcfce7;
+            color: #14532d;
+        }
+
+        .badge-long-answer {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        .badge-easy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-hard {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .no-questions {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            table th,
+            table td {
+                padding: 8px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>📝 Paper Generator</h1>
+        <div>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h2>📊 Database - View All Questions</h2>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="subjectFilter">Filter by Subject</label>
+                    <select id="subjectFilter" onchange="filterQuestions()">
+                        <option value="">All Subjects</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="chapterFilter">Filter by Chapter</label>
+                    <select id="chapterFilter" onchange="filterQuestions()">
+                        <option value="">All Chapters</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="typeFilter">Filter by Type</label>
+                    <select id="typeFilter" onchange="filterQuestions()">
+                        <option value="">All Types</option>
+                        <option value="MCQ">MCQ</option>
+                        <option value="One Sentence">One Sentence</option>
+                        <option value="Long Answer">Long Answer</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats" id="statsContainer"></div>
+
+        <!-- Table Container -->
+        <div class="table-wrapper" id="tableContainer">
+            <div class="loading">Loading questions...</div>
+        </div>
+    </div>
+
+    <script>
+        let allQuestions = [];
+
+        // Load questions on page load
+        document.addEventListener('DOMContentLoaded', loadQuestions);
+
+        async function loadQuestions() {
+            try {
+                const response = await fetch('/get-all-questions');
+                const data = await response.json();
+
+                if (data.success) {
+                    allQuestions = data.questions;
+                    populateFilters();
+                    displayQuestionsTable(allQuestions);
+                    displayStats(allQuestions);
+                } else {
+                    document.getElementById('tableContainer').innerHTML =
+                        `<div class="no-questions">Error loading questions: ${data.message}</div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('tableContainer').innerHTML =
+                    `<div class="no-questions">Error loading questions</div>`;
+            }
+        }
+
+        function populateFilters() {
+            const subjects = [...new Set(allQuestions.map(q => q.subject))].sort();
+            const chapters = [...new Set(allQuestions.map(q => q.chapter))].sort();
+
+            const subjectFilter = document.getElementById('subjectFilter');
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject;
+                subjectFilter.appendChild(option);
+            });
+
+            const chapterFilter = document.getElementById('chapterFilter');
+            chapters.forEach(chapter => {
+                const option = document.createElement('option');
+                option.value = chapter;
+                option.textContent = chapter;
+                chapterFilter.appendChild(option);
+            });
+        }
+
+        function filterQuestions() {
+            const subject = document.getElementById('subjectFilter').value;
+            const chapter = document.getElementById('chapterFilter').value;
+            const type = document.getElementById('typeFilter').value;
+
+            const filtered = allQuestions.filter(q => {
+                return (subject === '' || q.subject === subject) &&
+                    (chapter === '' || q.chapter === chapter) &&
+                    (type === '' || q.question_type === type);
+            });
+
+            displayQuestionsTable(filtered);
+            displayStats(filtered);
+        }
+
+        function displayQuestionsTable(questions) {
+            const container = document.getElementById('tableContainer');
+
+            if (questions.length === 0) {
+                container.innerHTML = '<div class="no-questions">No questions found</div>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">ID</th>
+                            <th style="width: 15%;">Subject</th>
+                            <th style="width: 15%;">Chapter</th>
+                            <th style="width: 35%;">Question</th>
+                            <th style="width: 8%;">Type</th>
+                            <th style="width: 5%;">Marks</th>
+                            <th style="width: 8%;">Difficulty</th>
+                            <th style="width: 9%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            questions.forEach((q, idx) => {
+                const typeClass = `badge-${q.question_type.toLowerCase().replace(' ', '-')}`;
+                const diffClass = `badge-${q.difficulty}`;
+
+                html += `
+                    <tr>
+                        <td>${q.id}</td>
+                        <td><strong>${q.subject}</strong></td>
+                        <td>${q.chapter}</td>
+                        <td>${q.question_text.substring(0, 50)}${q.question_text.length > 50 ? '...' : ''}</td>
+                        <td><span class="badge ${typeClass}">${q.question_type}</span></td>
+                        <td><strong>${q.marks}</strong></td>
+                        <td><span class="badge ${diffClass}">${q.difficulty}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-edit" onclick="viewQuestion(${q.id})">View</button>
+                                <button class="btn btn-delete" onclick="deleteQuestion(${q.id})">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function displayStats(questions) {
+            const statsContainer = document.getElementById('statsContainer');
+
+            const totalQuestions = questions.length;
+            const mcqCount = questions.filter(q => q.question_type === 'MCQ').length;
+            const oneSentenceCount = questions.filter(q => q.question_type === 'One Sentence').length;
+            const longAnswerCount = questions.filter(q => q.question_type === 'Long Answer').length;
+
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-number">${totalQuestions}</div>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${mcqCount}</div>
+                    <div class="stat-label">MCQ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${oneSentenceCount}</div>
+                    <div class="stat-label">One Sentence</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">${longAnswerCount}</div>
+                    <div class="stat-label">Long Answer</div>
+                </div>
+            `;
+        }
+
+        function viewQuestion(id) {
+            const question = allQuestions.find(q => q.id === id);
+            if (question) {
+                alert(`Question ID: ${id}\n\nSubject: ${question.subject}\nChapter: ${question.chapter}\nType: ${question.question_type}\nMarks: ${question.marks}\nDifficulty: ${question.difficulty}\n\nQuestion:\n${question.question_text}`);
+            }
+        }
+
+        function deleteQuestion(id) {
+            if (confirm('Are you sure you want to delete this question?')) {
+                fetch(`/delete-question/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Question deleted successfully');
+                            loadQuestions();
+                        } else {
+                            alert('Error deleting question: ' + data.message);
+                        }
+                    })
+                    .catch(error => alert('Error: ' + error.message));
+            }
+        }
+    </script>
+</body>
+
+</html>
