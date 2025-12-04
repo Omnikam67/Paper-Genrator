@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 Flask==2.3.2
 Flask-MySQLdb==1.0.1
 MySQLdb==1.2.5
 Werkzeug==2.3.6
+=======
+Flask==2.3.2
+Flask-MySQLdb==1.0.1
+MySQLdb==1.2.5
+Werkzeug==2.3.6
+>>>>>>> f03295e5d36334a8e71b14419b4988d8fe4538f6
