@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Paper Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('https://prpotepatilengg.ac.in/assets/images/about/about2/college-gate.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.85);
+            z-index: 0;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        nav h1 {
+            font-size: 24px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .box h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .box p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .box-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #764ba2;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        select,
+        input[type="text"],
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .mcq-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .mcq-option {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .mcq-option input {
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .step-indicator {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .main-boxes {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #submitQuestionBtn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        #submitQuestionBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        #submitQuestionBtn:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>📝 Paper Generator</h1>
+        <div>
+            <a href="/view-questions">View Questions</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Main Dashboard -->
+        <div id="mainDashboard" class="main-boxes">
+            <div class="box" onclick="startAddQuestion()">
+                <div class="box-icon">➕</div>
+                <h2>Add Questions</h2>
+                <p>Add new questions to the database</p>
+            </div>
+
+            <div class="box" onclick="startGeneratePaper()">
+                <div class="box-icon">📄</div>
+                <h2>Generate Paper</h2>
+                <p>Generate random question papers</p>
+            </div>
+        </div>
+
+        <!-- Add Questions Form -->
+        <div id="addQuestionForm" class="form-container">
+            <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+            <h2>Add New Question</h2>
+            <div id="addMessage" class="message"></div>
+
+            <div class="step-indicator" id="stepIndicator"></div>
+
+            <!-- Year Selection -->
+            <div id="yearStep" class="form-group">
+                <label>Select Year</label>
+                <div class="options-container" id="yearOptions"></div>
+            </div>
+
+            <!-- Semester Selection -->
+            <div id="semesterStep" class="form-group" style="display: none;">
+                <label>Select Semester</label>
+                <div class="options-container" id="semesterOptions"></div>
+            </div>
+
+            <!-- Subject Selection -->
+            <div id="subjectStep" class="form-group" style="display: none;">
+                <label>Select Subject</label>
+                <div class="options-container" id="subjectOptions"></div>
+            </div>
+
+            <!-- Chapter Selection -->
+            <div id="chapterStep" class="form-group" style="display: none;">
+                <label>Select Chapter</label>
+                <select id="chapterSelect" onchange="updateChapter()">
+                    <option value="">-- Select Chapter --</option>
+                </select>
+            </div>
+
+            <!-- Question Type Selection -->
+            <div id="typeStep" class="form-group" style="display: none;">
+                <label>Question Type</label>
+                <div class="options-container" id="typeOptions"></div>
+            </div>
+
+            <!-- Question Details Form -->
+            <div id="questionDetailsStep" class="form-group" style="display: none;">
+                <label>Question Text</label>
+                <textarea id="questionText" rows="4" placeholder="Enter the question here..."></textarea>
+
+                <label style="margin-top: 15px;">Marks</label>
+                <input type="number" id="questionMarks" min="1" placeholder="Enter marks">
+
+                <!-- MCQ Options (shown only for MCQ) -->
+                <div id="mcqSection" style="display: none; margin-top: 20px;">
+                    <label>MCQ Options</label>
+                    <div class="mcq-options">
+                        <div class="mcq-option">
+                            <label>A:</label>
+                            <input type="text" id="mcqA" placeholder="Option A">
+                        </div>
+                        <div class="mcq-option">
+                            <label>B:</label>
+                            <input type="text" id="mcqB" placeholder="Option B">
+                        </div>
+                        <div class="mcq-option">
+                            <label>C:</label>
+                            <input type="text" id="mcqC" placeholder="Option C">
+                        </div>
+                        <div class="mcq-option">
+                            <label>D:</label>
+                            <input type="text" id="mcqD" placeholder="Option D">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="submitQuestionBtn" onclick="submitQuestion()">Add Question</button>
+            </div>
+        </div>
+
+        <!-- Generate Paper Form -->
+        <div id="generatePaperForm" class="form-container">
+            <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+            <h2>Generate Question Paper</h2>
+            <div id="paperMessage" class="message"></div>
+
+            <div class="step-indicator" id="paperStepIndicator"></div>
+
+            <!-- Year Selection -->
+            <div id="genYearStep" class="form-group">
+                <label>Select Year</label>
+                <div class="options-container" id="genYearOptions"></div>
+            </div>
+
+            <!-- Semester Selection -->
+            <div id="genSemesterStep" class="form-group" style="display: none;">
+                <label>Select Semester</label>
+                <div class="options-container" id="genSemesterOptions"></div>
+            </div>
+
+            <!-- Subject Selection -->
+            <div id="genSubjectStep" class="form-group" style="display: none;">
+                <label>Select Subject</label>
+                <div class="options-container" id="genSubjectOptions"></div>
+            </div>
+
+            <!-- Course Code -->
+            <div id="courseCodeStep" class="form-group" style="display: none;">
+                <label>Course Code</label>
+                <input type="text" id="courseCode" placeholder="Enter course code (e.g., CS201, EC301)">
+                <button type="button" id="courseCodeNextBtn" onclick="validateCourseCode()"
+                    style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s ease;">Next
+                    →</button>
+            </div>
+
+            <!-- Time Selection -->
+            <div id="timeStep" class="form-group" style="display: none;">
+                <label>Exam Duration (Minutes)</label>
+                <input type="number" id="examTime" min="30" max="180" placeholder="Enter time in minutes" value="60">
+                <button type="button" id="timeNextBtn" onclick="validateExamTime()"
+                    style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s ease;">Next
+                    →</button>
+            </div>
+
+            <!-- Exam Type Selection -->
+            <div id="examTypeStep" class="form-group" style="display: none;">
+                <label>Exam Type</label>
+                <div class="options-container" id="examTypeOptions"></div>
+            </div>
+
+            <!-- Chapter Selection -->
+            <div id="chaptersStep" class="form-group" style="display: none;">
+                <label id="chaptersLabel">Select Chapter(s)</label>
+                <div id="chapterCheckboxes"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">
+                </div>
+                <button type="button" id="chaptersNextBtn" onclick="validateChapters()"
+                    style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s ease;">Next
+                    →</button>
+            </div>
+
+            <!-- Question Types Distribution -->
+            <div id="questionDistributionStep" class="form-group" style="display: none;">
+                <label>Question Types Distribution by Chapter</label>
+                <div id="chapterDistributionContainer"
+                    style="background: #f9f9f9; padding: 20px; border-radius: 5px; margin-top: 15px;">
+                    <!-- Chapter distributions will be generated here -->
+                </div>
+            </div>
+
+            <button type="button" id="genPaperBtn" onclick="generatePaper()" style="display: none;">Generate
+                Paper</button>
+        </div>
+
+        <!-- Paper Preview -->
+        <div id="paperPreview" class="form-container">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h2>Generated Paper</h2>
+            <div id="paperContent"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                <button type="button" onclick="downloadPaper()"
+                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">⬇️
+                    Download Paper</button>
+                <button type="button" onclick="printPaper()"
+                    style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 245, 0.3);">🖨️
+                    Print Paper</button>
+            </div>
+        </div>
+
+        <!-- Add this section to show generated papers after generation -->
+        <div id="generated-paper-section" style="display: none; margin-top: 30px;">
+            <div id="generated-paper-viewer"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        // After generating a paper successfully:
+        function handlePaperGenerated(paper) {
+            // Option 1: Redirect to paper view page
+            // Redirect to viewing page with paper ID
+            // window.location.href = `/view-paper?id=${paper.id}`;
+
+            // Option 2: Display paper inline (add to your page)
+            const paperId = paper.id;
+            window.location.href = `/generated_paper.html?id=${paperId}`;
+            // Or redirect to a route:
+            // window.location.href = `/paper/${paperId}`;
+        }
+    </script>
+</body>
+
+</html>
